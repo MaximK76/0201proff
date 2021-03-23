@@ -1,0 +1,55 @@
+// ==UserScript==
+// @name         Bot for YAndex2
+// @namespace    http://tampermonkey.net/
+// @version      0.1
+// @description  try to take over the world!
+// @author       You
+// @match        https://yandex.ru/*
+// @grant        none
+// ==/UserScript==
+
+function getCookie(name) {
+  let matches = document.cookie.match(new RegExp(
+    "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+  ));
+  return matches ? decodeURIComponent(matches[1]) : undefined;
+}
+let sites = {
+"muzmag77.ru":["Валторна","Тромбон","Литавры","Цифровое пианино Casio CDP-130SR"],
+"xn----7sbab5aqcbiddtdj1e1g.xn--p1ai":["Как звучит флейта","Кларнет","Фагот","Гобой","Саксофон"]
+}
+let site = Object.keys(sites)[Math.floor(Math.random()*Object.keys(sites).length)];
+let keywords = sites[site];
+let randomIndex = Math.floor(Math.random()*keywords.length);
+let keyword = keywords[randomIndex];
+
+let yandexInput = document.getElementById('text');
+let btn = document.getElementsByClassName('button')[0];
+
+let links = document.links;
+if(btn!=undefined){
+    let i = 0;
+    document.cookie = "site="+site;
+    let timerId = setInterval(()=>{
+        yandexInput.value += keyword[i++];
+        if(i==keyword.length){
+            clearInterval(timerId);
+            btn.click();
+        }
+    },280);
+}else{
+    site = getCookie("site");
+    let nextYandexPage = true;
+    let currentYandexPage = document.querySelector('...')[0].innerText;
+    for(let i=0; i<links.length; i++){
+        let link = links[i];
+        if(link.href.indexOf(site)!=-1){
+            nextYandexPage = false;
+            link.click(); // Кликаем по ссылке
+            break; // Прерываем цикл
+        }
+    }if(nextYandexPage && currentYandexPage<13){
+     document.getElementByClassName("pages_item")[0].click();
+    }
+    else if(currentYandexPage==13) location.href = "https://yandex.ru/";
+}
